@@ -12,6 +12,7 @@ from rich.highlighter import RegexHighlighter
 class RequestHighlighter(RegexHighlighter):
     base_style = "req."
     highlights = [
+        # HTTP               GET             /foo/egg.html  200            [0.57, 127.0.0.1:59076]  
         r"^(?P<protocol>\w+) (?P<method>\w+) (?P<path>\S+) (?P<result>\w+) (?P<stats>\[.+\])$",
         r"\/(?P<filename>\w+\..{3,4})",
     ]
