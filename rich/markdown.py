@@ -367,7 +367,7 @@ class MarkdownContext:
 
     def on_text(self, text: str, node_type: str) -> None:
         """Called when the parser visits text."""
-        if node_type == "code" and self._syntax is not None:
+        if node_type in "code" and self._syntax is not None:
             highlight_text = self._syntax.highlight(text)
             highlight_text.rstrip()
             self.stack.top.on_text(
@@ -517,10 +517,13 @@ class Markdown(JupyterMixin):
                     if current.literal:
                         element.on_text(context, current.literal.rstrip())
                     context.stack.pop()
-                    if new_line:
-                        yield Segment("\n")
-                    yield from console.render(element, context.options)
-                    element.on_leave(context)
+                    if context.stack.top.on_child_close(context, element):
+                        if new_line:
+                            yield Segment("\n")
+                        yield from console.render(element, context.options)
+                        element.on_leave(context)
+                    else:
+                        element.on_leave(context)
                     new_line = element.new_line
 
 
@@ -535,8 +538,7 @@ if __name__ == "__main__":  # pragma: no cover
     parser.add_argument(
         "path",
         metavar="PATH",
-        nargs="?",
-        help="path to markdown file",
+        help="path to markdown file, or - for stdin",
     )
     parser.add_argument(
         "-c",
@@ -593,7 +595,7 @@ if __name__ == "__main__":  # pragma: no cover
 
     from rich.console import Console
 
-    if not args.path or args.path == "-":
+    if args.path == "-":
         markdown_body = sys.stdin.read()
     else:
         with open(args.path, "rt", encoding="utf-8") as markdown_file:

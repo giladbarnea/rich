@@ -275,6 +275,7 @@ class Segment(NamedTuple):
         width: int,
         height: int = None,
         style: Style = None,
+        new_lines: bool = False,
     ) -> List[List["Segment"]]:
         """Set the shape of a list of lines (enclosing rectangle).
 
@@ -283,15 +284,21 @@ class Segment(NamedTuple):
             width (int): Desired width.
             height (int, optional): Desired height or None for no change.
             style (Style, optional): Style of any padding added. Defaults to None.
+            new_lines (bool, optional): Padded lines should include "\n". Defaults to False.
 
         Returns:
             List[List[Segment]]: New list of lines that fits width x height.
         """
         if height is None:
             height = len(lines)
-        new_lines: List[List[Segment]] = []
-        pad_line = [Segment(" " * width, style)]
-        append = new_lines.append
+        shaped_lines: List[List[Segment]] = []
+        pad_line = (
+            [Segment(" " * width, style), Segment("\n")]
+            if new_lines
+            else [Segment(" " * width, style)]
+        )
+
+        append = shaped_lines.append
         adjust_line_length = cls.adjust_line_length
         line: Optional[List[Segment]]
         iter_lines = iter(lines)
@@ -301,7 +308,7 @@ class Segment(NamedTuple):
                 append(pad_line)
             else:
                 append(adjust_line_length(line, width, style=style))
-        return new_lines
+        return shaped_lines
 
     @classmethod
     def simplify(cls, segments: Iterable["Segment"]) -> Iterable["Segment"]:
@@ -384,9 +391,34 @@ class Segment(NamedTuple):
 
 
 if __name__ == "__main__":  # pragma: no cover
-    lines = [[Segment("Hello")]]
-    lines = Segment.set_shape(lines, 50, 4, style=Style.parse("on blue"))
-    for line in lines:
-        print(line)
+    from rich.syntax import Syntax
+    from rich.text import Text
+    from rich.console import Console
 
-    print(Style.parse("on blue") + Style.parse("on red"))
+    code = """from rich.console import Console
+console = Console()
+text = Text.from_markup("Hello, [bold magenta]World[/]!")
+console.print(text)"""
+
+    text = Text.from_markup("Hello, [bold magenta]World[/]!")
+
+    console = Console()
+
+    console.rule("rich.Segment")
+    console.print(
+        "A Segment is the last step in the Rich render process before gemerating text with ANSI codes."
+    )
+    console.print("\nConsider the following code:\n")
+    console.print(Syntax(code, "python", line_numbers=True))
+    console.print()
+    console.print(
+        "When you call [b]print()[/b], Rich [i]renders[/i] the object in to the the following:\n"
+    )
+    fragments = list(console.render(text))
+    console.print(fragments)
+    console.print()
+    console.print("The Segments are then processed to produce the following output:\n")
+    console.print(text)
+    console.print(
+        "\nYou will only need to know this if you are implementing your own Rich renderables."
+    )

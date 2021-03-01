@@ -530,10 +530,11 @@ class Syntax(JupyterMixin):
             if self.word_wrap:
                 wrapped_lines = console.render_lines(
                     line,
-                    render_options,
+                    render_options.update(height=None),
                     style=background_style,
                     pad=not transparent_background,
                 )
+
             else:
                 segments = list(line.render(console, end=""))
                 if options.no_wrap:
@@ -573,8 +574,7 @@ if __name__ == "__main__":  # pragma: no cover
     parser.add_argument(
         "path",
         metavar="PATH",
-        nargs="?",
-        help="path to file",
+        help="path to file, or - for stdin",
     )
     parser.add_argument(
         "-c",
@@ -646,7 +646,7 @@ if __name__ == "__main__":  # pragma: no cover
 
     console = Console(force_terminal=args.force_color, width=args.width)
 
-    if not args.path or args.path == "-":
+    if args.path == "-":
         code = sys.stdin.read()
         syntax = Syntax(
             code=code,

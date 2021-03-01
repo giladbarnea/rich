@@ -30,6 +30,7 @@ class Panel(JupyterMixin):
         style (str, optional): The style of the panel (border and contents). Defaults to "none".
         border_style (str, optional): The style of the border. Defaults to "none".
         width (Optional[int], optional): Optional width of panel. Defaults to None to auto-detect.
+        height (Optional[int], optional): Optional height of panel. Defaults to None to auto-detect.
         padding (Optional[PaddingDimensions]): Optional padding around renderable. Defaults to 0.
         highlight (bool, optional): Enable automatic highlighting of panel title (if str). Defaults to False.
     """
@@ -46,6 +47,7 @@ class Panel(JupyterMixin):
         style: StyleType = "none",
         border_style: StyleType = "none",
         width: Optional[int] = None,
+        height: Optional[int] = None,
         padding: PaddingDimensions = (0, 1),
         highlight: bool = False,
     ) -> None:
@@ -58,6 +60,7 @@ class Panel(JupyterMixin):
         self.style = style
         self.border_style = border_style
         self.width = width
+        self.height = height
         self.padding = padding
         self.highlight = highlight
 
@@ -132,7 +135,9 @@ class Panel(JupyterMixin):
             if self.expand
             else Measurement.get(console, renderable, width - 2).maximum
         )
-        child_height = None if options.height is None else options.height - 2
+        child_height = self.height or options.height or None
+        if child_height:
+            child_height -= 2
         if title_text is not None:
             child_width = min(
                 options.max_width - 2, max(child_width, title_text.cell_len + 2)
@@ -192,15 +197,12 @@ if __name__ == "__main__":  # pragma: no cover
     from .box import ROUNDED, DOUBLE
 
     p = Panel(
-        Panel.fit(
-            Text.from_markup("[bold magenta]Hello World!"),
-            box=ROUNDED,
-            safe_box=True,
-            style="on red",
-        ),
-        title="[b]Hello, World",
+        "Hello, World!",
+        title="rich.Panel",
+        style="white on blue",
         box=DOUBLE,
+        padding=1,
     )
 
-    print(p)
+    c.print()
     c.print(p)

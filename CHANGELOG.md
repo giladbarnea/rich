@@ -5,6 +5,74 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [9.12.3] - 2021-02-28
+
+### Changed
+
+- Optimized Padding
+
+## [9.12.2] - 2021-02-27
+
+### Added
+
+- Added ConsoleOptions.copy
+
+### Changed
+
+- Optimized ConsoleOptions.update
+
+## [9.12.1] - 2021-02-27
+
+### Fixed
+
+- Fixed deadlock in Progress https://github.com/willmcgugan/rich/issues/1061
+
+### Added
+
+- Added Task.finished_speed
+
+### Changed
+
+- Froze TransferSpeedColumn speed when task is finished
+- Added SIGINT handler to downloader.py example
+- Optimization for large tables
+
+## [9.12.0] - 2021-02-24
+
+### Fixed
+
+- Fixed issue with Syntax and missing lines in Layout https://github.com/willmcgugan/rich/issues/1050
+- Fixed issue with nested markdown elements https://github.com/willmcgugan/rich/issues/1036
+- Fixed new lines not invoking render hooks https://github.com/willmcgugan/rich/issues/1052
+- Fixed Align setting height to child https://github.com/willmcgugan/rich/issues/1057
+
+### Changed
+
+- Printing a table with no columns now result in a blank line https://github.com/willmcgugan/rich/issues/1044
+
+### Added
+
+- Added height to Panel
+
+## [9.11.1] - 2021-02-20
+
+### Fixed
+
+- Fixed table with expand=False not expanding when justify="center"
+- Fixed single renderable in Layout not respecting height
+- Fixed COLUMNS and LINES env var https://github.com/willmcgugan/rich/issues/1019
+- Layout now respects minimum_size when fixes sizes are greater than available space
+- HTML export now changes link underline score to match terminal https://github.com/willmcgugan/rich/issues/1009
+
+### Changed
+
+- python -m rich.markdown and rich.syntax show usage with no file
+
+### Added
+
+- Added height parameter to Layout
+- Added python -m rich.segment
+
 ## [9.11.0] - 2021-02-15
 
 ### Fixed
